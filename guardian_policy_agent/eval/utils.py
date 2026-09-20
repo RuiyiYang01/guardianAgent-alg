@@ -9,7 +9,7 @@ def tokenize(text: str) -> List[str]:
 
 def jaccard(a: Iterable[str], b: Iterable[str]) -> float:
     s1, s2 = set(a), set(b)
-    if not s1 and not s2: 
+    if not s1 and not s2:
         return 1.0
     return len(s1 & s2) / max(1, len(s1 | s2))
 

@@ -12,18 +12,18 @@ def hybrid_rank(
     s_scores = []
     for s in statements:
         s_scores.append(structured_score_obj(s, behavior))
-    
+
     # Avoid division by zero
     max_s = max(s_scores) if s_scores else 1.0
     if max_s == 0: max_s = 1.0
-    
+
     s_norm = [ (x / max_s) for x in s_scores ]
 
     kw_rank = keyword_rank(statements, behavior)
     # keyword_rank returns a list of (index, score); we need to map back to original order
     k_scores_map = {idx: score for idx, score in kw_rank}
     k_scores = []
-    
+
     # Get max keyword score for normalization
     max_k = max(k_scores_map.values()) if k_scores_map else 1.0
     if max_k == 0: max_k = 1.0
@@ -37,19 +37,19 @@ def hybrid_rank(
         s, k = s_norm[i], k_scores[i]
         final = alpha * s + (1 - alpha) * k
         out.append((i, final, {"structured": s, "keyword": k}))
-    
+
     out.sort(key=lambda x: x[1], reverse=True)
     return out
 
 def structured_score_obj(stmt_obj: Dict[str, Any], behavior: Dict[str, Any]) -> float:
     # === Fix: Define a mock Doc class ===
     class _Doc:
-        def __init__(self, d): 
+        def __init__(self, d):
             self.domain = d
 
     # === Fix: Define mock Statement class ===
     class _S:
-        def __init__(self, o): 
+        def __init__(self, o):
             self.data_categories = o.get("data_categories") or []
             self.actions = o.get("actions") or []
             self.purposes = o.get("purposes") or []

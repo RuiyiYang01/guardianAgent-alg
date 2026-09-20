@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, DateTime, Text, Boolean, ForeignKey, JSON, Index
+from sqlalchemy import String, Integer, Float, DateTime, Text, Boolean, ForeignKey, JSON, Index
 from sqlalchemy.dialects.postgresql import JSONB
 
 class Base(DeclarativeBase):
@@ -152,3 +152,21 @@ class DecisionEvidence(Base):
     policy_statement_id: Mapped[int] = mapped_column(ForeignKey("policy_statements.id", ondelete="CASCADE"))
     role: Mapped[str] = mapped_column(String(32), default="support")             # support/contradict/neutral
     note: Mapped[Optional[str]] = mapped_column(Text)
+
+class UsageMetric(Base):
+    """Privacy-preserving product telemetry. Request bodies are never stored."""
+    __tablename__ = "usage_metrics"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    endpoint: Mapped[str] = mapped_column(String(64), index=True)
+    install_id_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
+    domain: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
+    status_code: Mapped[int] = mapped_column(Integer)
+    latency_ms: Mapped[float] = mapped_column(Float)
+    decision: Mapped[Optional[str]] = mapped_column(String(16), nullable=True, index=True)
+    risk_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    sensitive: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    categories: Mapped[Optional[list]] = mapped_column(JSON_COMPAT, nullable=True)
+    initial_level: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    final_level: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    upgraded: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)

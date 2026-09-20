@@ -49,7 +49,7 @@ class BM25Lite:
         dl = len(d)
         s = 0.0
         for t in q:
-            if t not in self.idf: 
+            if t not in self.idf:
                 continue
             idf = self.idf[t]
             tf = f[t]
@@ -63,12 +63,12 @@ def keyword_rank(
 ) -> List[Tuple[int, float]]:
     if not statements:
         return []
-        
+
     texts = [_field_join(s) for s in statements]
     docs = [_tokenize(t) for t in texts]
     q_text = build_query_text(behavior)
     q = _tokenize(q_text)
-    
+
     # If query is empty (e.g., due to missing behavior data), return 0 scores
     if not q:
         return [(i, 0.0) for i in range(len(statements))]
@@ -77,7 +77,7 @@ def keyword_rank(
     out = []
     for i, d in enumerate(docs):
         out.append((i, bm25.score(q, d)))
-    
+
     # Sort by score in descending order
     out.sort(key=lambda x: x[1], reverse=True)
     return out

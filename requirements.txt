@@ -1,0 +1,18 @@
+SQLAlchemy>=2.0
+PyYAML>=6.0
+python-dotenv>=1.0
+pytest>=8.0
+torch>=2.2
+# PyTorch 2.2 CPU wheels are compiled against the NumPy 1.x ABI.
+numpy>=1.26,<2
+google-genai>=1.0
+anthropic>=0.40
+openai>=1.0
+spacy>=3.7
+sentence-transformers>=3.0
+krippendorff>=0.6
+scikit-learn>=1.4
+pandas>=2.0
+matplotlib>=3.8
+tqdm>=4.66
+bert-score>=0.3.13

@@ -21,7 +21,7 @@ def fetch_candidate_statements(
     Strict retrieval: Only fetch statements belonging to the exact domain.
     """
     q = select(PolicyDoc).order_by(PolicyDoc.created_at.desc())
-    
+
     # === Key Change: Strict Domain Matching, No Fallback ===
     has_filter = False
     if domain:
@@ -32,7 +32,7 @@ def fetch_candidate_statements(
     elif app_id:
         # If it's an App, this logic is temporarily left empty or to be implemented per requirements
         pass
-        
+
     if not has_filter:
         # If no domain is provided, retrieval is not possible
         return []
@@ -45,12 +45,12 @@ def fetch_candidate_statements(
         return []
 
     # Get the latest policy version
-    target_doc = docs[0] 
-    
+    target_doc = docs[0]
+
     st = ses.execute(
         select(PolicyStatement).where(PolicyStatement.policy_doc_id == target_doc.doc_id)
     ).scalars().all()
-    
+
     return st
 
 def structured_score(
@@ -65,22 +65,22 @@ def structured_score(
         "recipients": 0.1,
     }
     score = 0.0
-    
+
     # Base score: award points for any policy belonging to this domain
     # This check becomes redundant now (since retrieval already filters), but kept as a safeguard
     if behavior.get("domain") and stmt.doc and stmt.doc.domain in str(behavior.get("domain")):
         score += 0.1
-    
+
     score += weights["data_categories"] * min(1.0, _overlap(stmt.data_categories, behavior.get("data_categories")) / max(1, len(_to_set(behavior.get("data_categories")))))
     score += weights["actions"] * min(1.0, _overlap(stmt.actions, behavior.get("actions")) / max(1, len(_to_set(behavior.get("actions")))))
-    
+
     if behavior.get("purposes"):
         score += weights["purposes"] * min(1.0, _overlap(stmt.purposes, behavior.get("purposes")) / max(1, len(_to_set(behavior.get("purposes")))))
     if behavior.get("recipients"):
         score += weights["recipients"] * min(1.0, _overlap(stmt.recipients, behavior.get("recipients")) / max(1, len(_to_set(behavior.get("recipients")))))
-        
+
     if stmt.rights_flag: score += 0.05
     if stmt.transfer_outside_eea_uk: score += 0.03
     if stmt.retention_mode: score += 0.02
-    
+
     return float(max(0.0, min(score, 1.2)))

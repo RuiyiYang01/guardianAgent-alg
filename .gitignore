@@ -1,0 +1,21 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated artifacts are intentionally excluded from this code-only release.
+data/
+results/
+checkpoints/
+audits/
+*.db
+*.jsonl
+
+# Local model and experiment caches.
+external/
+.cache/

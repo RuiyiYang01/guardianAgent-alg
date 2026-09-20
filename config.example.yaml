@@ -1,0 +1,9 @@
+db_url: sqlite:///./guardian.db
+echo_sql: false
+
+logging:
+  level: INFO
+  json: true
+
+audit:
+  path: ./audits/decisions.jsonl
